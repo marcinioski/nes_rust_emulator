@@ -1,0 +1,10 @@
+[workspace]
+
+members = [
+    "hal",
+    "memory",
+    "screen",
+    "cartigereader",
+    "controller",
+    "gui",
+]
