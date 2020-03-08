@@ -55,9 +55,14 @@ pub enum RomReaderErr {
     WrongArgs,
 }
 
+pub enum RomType {
+    NesRom,
+}
+
 pub struct Rom {
     pub memory: RawPtr,
     pub rom_size: usize,
+    pub rom_type: RomType,
 }
 
 pub trait RomReader {
