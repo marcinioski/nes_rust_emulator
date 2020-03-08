@@ -5,6 +5,7 @@ use hal::interface::RomReaderErr;
 use hal::interface::Rom;
 use std::sync::Arc;
 use std::mem;
+use std::env;
 
 #[cfg(test)]
 mod tests {
@@ -58,6 +59,13 @@ mod tests {
         }
 
         if let Err(RomReaderErr::CannotRead) = rom_controller.read_rom("unexist_rom", &mut mem_controller) {
+            ()
+        }
+        else {
+            assert!(false);
+        }
+
+        if let Ok(_rom) = rom_controller.read_rom("tests/static/wrong_input.rom", &mut mem_controller) {
             ()
         }
         else {

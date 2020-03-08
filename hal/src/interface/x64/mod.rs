@@ -1,8 +1,9 @@
 use crate::interface::{Memory, MemoryController, RawPtr};
-use crate::interface::{Rom, RomReader, RomReaderErr};
+use crate::interface::{Rom, RomType, RomReader, RomReaderErr};
 use std::sync::Arc;
 use std::fs;
 use std::error;
+use std::mem;
 
 pub struct X64MemoryController;
 pub struct X64RomController;
@@ -34,7 +35,7 @@ impl Memory for X64MemoryController {
     }
 
     fn ctrl_from_ptr(&mut self, ptr: *const u8, size: usize) -> Option<RawPtr> {
-        if size == 0 {
+        if size == 0  || (ptr == 0 as *const u8) {
             None
         }
         else {
@@ -47,20 +48,18 @@ impl Memory for X64MemoryController {
     }
 }
 
-
 impl Rom {
     fn read_file(path: &str) -> Result<Vec<u8>, Box<dyn error::Error + 'static>> {
         let bytes = fs::read(path)?;
         Ok(bytes)
     }
     fn new(memory: RawPtr, rom_size: usize) -> Rom {
-        Rom {memory, rom_size}
+        Rom {memory, rom_size, rom_type: RomType::NesRom}
     }
 }
 
 impl RomReader for X64RomController {
     fn read_rom(&mut self, path: &str, mem_controller: &mut Arc<&mut MemoryController>) -> Result<Rom, RomReaderErr> {
-        //let mem_controller = mem_controller.clone();
         if let Some(mem_controller) = Arc::get_mut(mem_controller) {
 
             if path.len() <= 0 {
@@ -68,6 +67,7 @@ impl RomReader for X64RomController {
             }
 
             if let Ok(bytes) = Rom::read_file(path) {
+                let bytes = mem::ManuallyDrop::new(bytes);
                 if let Some(ptr) = mem_controller.ctrl_from_ptr(bytes.as_ptr(), bytes.len()) {
                     return Ok(Rom::new(ptr, bytes.len()));
                 }
