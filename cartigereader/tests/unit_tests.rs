@@ -17,6 +17,7 @@ mod tests {
         if let Ok(rom) = rom_controller.read_rom("tests/static/wrong_rom.rom", &mut mem_controller){
             if let Err(CartidgeErr::WrongHeader) = Cartidge::new(&rom) {
                 println!("Could not read wrong header!");
+                ()
             }
             else {
                 assert!(false);
