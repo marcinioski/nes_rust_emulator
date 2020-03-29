@@ -46,6 +46,24 @@ impl Memory for X64MemoryController {
             }
         }
     }
+
+    fn ctrl_ptr_from_slice(&mut self, ptr: &mut RawPtr, len: usize, shift: usize) ->Option<RawPtr> {
+        if len == 0 {
+            None
+        }
+        else {
+            unsafe {
+                let ptr = Arc::get_mut(ptr).unwrap().as_ptr() as *mut u8;
+
+                let result = Vec::from_raw_parts(ptr.offset(0), len, len);
+
+                let result = mem::ManuallyDrop::new(result);
+                None
+
+//                Some(Arc::new(result.into_boxed_slice()))
+            }
+        }
+    }
 }
 
 impl Rom {

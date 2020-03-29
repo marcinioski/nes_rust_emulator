@@ -5,6 +5,7 @@ pub trait Memory {
     fn ctrlmalloc(&mut self, size: usize) -> Option<RawPtr>;
     fn ctrlfree(&mut self, ptr: RawPtr);
     fn ctrl_from_ptr(&mut self, ptr: *const u8, size: usize) -> Option<RawPtr>;
+    fn ctrl_ptr_from_slice(&mut self, ptr: &mut RawPtr, len: usize, shift: usize) ->Option<RawPtr>;
 }
 
 #[cfg(target_arch = "x86_64")]
@@ -46,6 +47,10 @@ impl Memory for MemoryController {
     fn ctrl_from_ptr(&mut self, ptr: *const u8, size: usize) -> Option<RawPtr> {
         self.controller.ctrl_from_ptr(ptr, size)
     }
+
+    fn ctrl_ptr_from_slice(&mut self, ptr: &mut RawPtr, len: usize, shift: usize) -> Option<RawPtr> {
+        self.controller.ctrl_ptr_from_slice(ptr, len, shift)
+    }
 }
 
 pub enum RomReaderErr {
@@ -57,6 +62,7 @@ pub enum RomReaderErr {
 
 pub enum RomType {
     NesRom,
+    Unknown,
 }
 
 pub struct Rom {
